@@ -1,8 +1,9 @@
 package org.egibide.Modelo;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
-public class Usuario {
+public class Usuario implements Serializable {
     private String nombre;
     private String apellido;
     private LocalDate fechaNacimiento;
@@ -10,6 +11,7 @@ public class Usuario {
     private String email;
     private String usuario;
     private byte[] pass;
+    private String passTexto;
 
 
     public Usuario() {
@@ -24,6 +26,15 @@ public class Usuario {
         this.pass = pass;
     }
 
+    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, int edad, String email, String usuario, String passTexto) {
+        this.nombre = nombre;
+        this.apellido = apellido;
+        this.fechaNacimiento = fechaNacimiento;
+        this.edad = edad;
+        this.email = email;
+        this.usuario = usuario;
+        this.passTexto = passTexto;
+    }
 
     // region Getters y setters
 
@@ -83,6 +94,12 @@ public class Usuario {
         this.pass = pass;
     }
 
+    public String getPassTexto() {
+        return passTexto;
+    }
 
+    public void setPassTexto(String passTexto) {
+        this.passTexto = passTexto;
+    }
     // endregion
 }
