@@ -29,7 +29,7 @@ public class V_login {
 
                 Usuario u = new Usuario();
                 u.setUsuario(tf_username.getText());
-                u.setPassTexto(Arrays.toString(passf.getPassword()));
+                u.setPassTexto(new String(passf.getPassword()));
                 try {
                     ObjectOutputStream salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
                     salida.writeObject(u);

@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.security.NoSuchAlgorithmException;
+import java.util.Arrays;
 
 public class HiloServidor extends Thread {
 
@@ -28,16 +29,16 @@ public class HiloServidor extends Thread {
             ObjectOutputStream salida = new ObjectOutputStream(cliente.getOutputStream()); // enviamos información
             ObjectInputStream lectura = new ObjectInputStream(cliente.getInputStream()); // recibimos infprmación
 
-            Usuario usuario = (Usuario) lectura.readObject();
-            usuario.setPass(General.elHash("SHA-256", usuario.getPassTexto()));
+            Usuario usuarioRecivido = (Usuario) lectura.readObject();
+            usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
 
-            for (Usuario usu : Servidor.listaUsuarios) {
-                if (usu.getUsuario().equals(usuario.getUsuario())) {
-                    if (usu.getPass() == usuario.getPass()) {
-                        System.out.println("bien");
-                    }
+            this.usuario = Servidor.usuarios.get(usuarioRecivido.getUsuario());
+            if (usuario != null) {
+                if (Arrays.equals(usuario.getPass(), usuarioRecivido.getPass())) {
+                    System.out.println("bien");
                 }
             }
+
 
             salida.close();
             lectura.close();

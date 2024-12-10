@@ -7,7 +7,8 @@ public class Incidencia {
     private Usuario ususario;
 
     // Para rellenar por el servidor
-    private Categoria codigo;
+    private int codigo;
+    private Categoria categoria;
     private String estimacionTiempo;
 
 
@@ -59,12 +60,20 @@ public class Incidencia {
         this.ususario = ususario;
     }
 
-    public Categoria getCodigo() {
+    public int getCodigo() {
         return codigo;
     }
 
-    public void setCodigo(Categoria codigo) {
+    public void setCodigo(int codigo) {
         this.codigo = codigo;
+    }
+
+    public Categoria getCategoria() {
+        return categoria;
+    }
+
+    public void setCategoria(Categoria categoria) {
+        this.categoria = categoria;
     }
 
     public String getEstimacionTiempo() {

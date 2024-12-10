@@ -11,17 +11,18 @@ import java.io.IOException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public class Servidor {
-    public static List<Usuario> listaUsuarios = new ArrayList<>();
+    public static HashMap<String, Usuario> usuarios = new HashMap<>();
 
     public static void main(String[] args) {
         try {
             Usuario usuario = new Usuario();
             usuario.setUsuario("admin");
-            usuario.setPass(new General().elHash("SHA-256", "1234"));
-            listaUsuarios.add(usuario);
+            usuario.setPass(General.elHash("SHA-256", "1234"));
+            usuarios.put(usuario.getUsuario(), usuario);
         } catch (NoSuchAlgorithmException e){
             System.out.println("No se ha encontrado la implementación del algoritmo.");
         }
@@ -29,9 +30,6 @@ public class Servidor {
 
 
         int puerto = 6001;
-        File  file = new File("certificados");
-        System.out.println(file.isDirectory());
-        System.out.println(file.getAbsolutePath());
 
         System.setProperty("javax.net.ssl.keyStore", "certificados\\AlmacenSSL.jks");
         System.setProperty("javax.net.ssl.keyStorePassword", "12345Abcde");
