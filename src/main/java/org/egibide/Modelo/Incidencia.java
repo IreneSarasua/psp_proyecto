@@ -1,10 +1,13 @@
 package org.egibide.Modelo;
 
-public class Incidencia {
+import java.io.Serializable;
+import java.util.Random;
+
+public class Incidencia implements Serializable {
     private String asunto;
     private String descripcion;
     private String lugar;
-    private Usuario ususario;
+    private Usuario usuario;
 
     // Para rellenar por el servidor
     private int codigo;
@@ -17,11 +20,11 @@ public class Incidencia {
     public Incidencia() {
     }
 
-    public Incidencia(String asunto, String descripcion, String lugar, Usuario ususario) {
+    public Incidencia(String asunto, String descripcion, String lugar, Usuario usuario) {
         this.asunto = asunto;
         this.descripcion = descripcion;
         this.lugar = lugar;
-        this.ususario = ususario;
+        this.usuario = usuario;
     }
     // endregion
 
@@ -52,12 +55,12 @@ public class Incidencia {
         this.lugar = lugar;
     }
 
-    public Usuario getUsusario() {
-        return ususario;
+    public Usuario getUsuario() {
+        return usuario;
     }
 
-    public void setUsusario(Usuario ususario) {
-        this.ususario = ususario;
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
     }
 
     public int getCodigo() {
@@ -85,8 +88,36 @@ public class Incidencia {
     }
     // endregion
 
+    public void calcularTiempo() {
+        String texto = "";
+        int num1 = 0;
+        int num2 = 0;
+        Random rand = new Random();
+        if (categoria != null) {
+            switch (categoria) {
+                case LEVE ->{
+                    num1 = rand.nextInt(4);
+                    num2 = num1 + rand.nextInt(9);
+                    texto = String.format("Estimación de tiempos: de %d a %d meses", num1, num2);
+                }
+                case MODERADA -> {
+                    num1 = rand.nextInt(4);
+                    num2 = num1 + rand.nextInt(10);
+                    texto = String.format("Estimación de tiempos: de %d a %d semanas", num1, num2);
 
-
+                }
+                case URGENTE -> {
+                    num1 = rand.nextInt(4);
+                    num2 = num1 + rand.nextInt(49);
+                    texto = String.format("Estimación de tiempos: de %d a %d horas", num1, num2);
+                }
+                default -> {
+                    texto = "No se pudo establecer una estimación de tiempo, se le comunicara en cunto sea posible.";
+                }
+            }
+            this.estimacionTiempo = texto;
+        }
+    }
 
 
 }

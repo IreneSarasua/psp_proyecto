@@ -5,15 +5,11 @@ import org.egibide.GUI.V_login;
 import javax.net.ssl.SSLSocket;
 import javax.net.ssl.SSLSocketFactory;
 import javax.swing.*;
-import java.awt.*;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 public class Cliente {
 
     public static SSLSocket cliente = null;
-    public static ObjectOutputStream salida;
-    public static ObjectInputStream lectura;
+
 
     public static void main(String[] args) {
 
@@ -27,11 +23,6 @@ public class Cliente {
             cliente = (SSLSocket) sfact.createSocket(host, puerto);
             System.out.println("Conexión con el servidor.");
 
-            //salida = new ObjectOutputStream(cliente.getOutputStream()); // enviamos información
-            //lectura = new ObjectInputStream(cliente.getInputStream()); // recibimos infprmación
-
-
-
             try {
                 // Set System L&F
                 UIManager.setLookAndFeel(
@@ -43,15 +34,12 @@ public class Cliente {
             }
 
             JFrame frame = new JFrame("Login");
-            frame.setContentPane(new V_login().getPanelPrincipal());
-            frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+            frame.setContentPane(new V_login(frame).getPanelPrincipal());
+            //frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
             frame.pack();
             frame.setVisible(true);
             frame.setLocationRelativeTo(null);
 
-            //lectura.close();
-            //salida.close();
-            //cliente.close();
 
         }catch (Exception e) {
             System.out.printf("Error: %s\n", e.getMessage());

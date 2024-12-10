@@ -6,27 +6,25 @@ import org.egibide.utils.General;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
-import java.io.File;
 import java.io.IOException;
-import java.security.MessageDigest;
+
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 public class Servidor {
     public static HashMap<String, Usuario> usuarios = new HashMap<>();
+    public static int numIncidencia = 0;
 
     public static void main(String[] args) {
         try {
             Usuario usuario = new Usuario();
             usuario.setUsuario("admin");
+            usuario.setNombre("Yo");
             usuario.setPass(General.elHash("SHA-256", "1234"));
             usuarios.put(usuario.getUsuario(), usuario);
-        } catch (NoSuchAlgorithmException e){
+        } catch (NoSuchAlgorithmException e) {
             System.out.println("No se ha encontrado la implementación del algoritmo.");
         }
-
 
 
         int puerto = 6001;
@@ -52,6 +50,14 @@ public class Servidor {
         }
 
 
+    }
+
+    public static synchronized void addUsuario(Usuario usuario) {
+        usuarios.put(usuario.getUsuario(), usuario);
+    }
+    public static synchronized int addIncidencia() {
+        numIncidencia++;
+        return numIncidencia;
     }
 
 }

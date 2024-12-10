@@ -102,4 +102,10 @@ public class Usuario implements Serializable {
         this.passTexto = passTexto;
     }
     // endregion
+
+
+    @Override
+    public String toString() {
+        return String.format("%s - %s %s", usuario, nombre != null ? nombre : "", apellido != null ? apellido : "");
+    }
 }
