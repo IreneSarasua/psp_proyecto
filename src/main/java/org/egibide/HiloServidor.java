@@ -118,7 +118,6 @@ public class HiloServidor extends Thread {
             salida.writeObject(mensaje);
             System.out.println("Enviando mensaje");
 
-            salida.close();
         } catch (IOException e) {
             System.out.println("Error al leer o esctibir: " + e.getMessage());
         }

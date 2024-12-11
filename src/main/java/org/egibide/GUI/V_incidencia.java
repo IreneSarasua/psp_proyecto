@@ -36,13 +36,13 @@ public class V_incidencia extends JDialog {
     private JTextField tf_usuario;
     private JLabel label_usuario;
 
-
+    private JTable tablaIncidencias;
     // endregion
 
-    ObjectOutputStream salida;
-    ObjectInputStream lectura;
+    private ObjectOutputStream salida;
+    private ObjectInputStream lectura;
 
-    List<Incidencia> listaIncidencias= new ArrayList<>();
+    private List<Incidencia> listaIncidencias = new ArrayList<>();
 
     public V_incidencia(Usuario usuario) {
         super((Frame) null, true);
@@ -50,16 +50,8 @@ public class V_incidencia extends JDialog {
         setDefaultCloseOperation(DISPOSE_ON_CLOSE);
         setSize(500, 160);
 
+        tablaIncidencias();
         tf_usuario.setText(usuario.toString());
-/*
-        try {
-            salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
-            lectura = new ObjectInputStream(Cliente.cliente.getInputStream()); // recibimos infprmación
-        } catch (IOException e) {
-            System.out.println("Error al leer o esctibir: " + e.getMessage());
-        }
-
- */
 
 
         enviarButton.addActionListener(new ActionListener() {
@@ -82,6 +74,7 @@ public class V_incidencia extends JDialog {
                         if (incidenciaRecibida != null) {
                             listaIncidencias.add(incidenciaRecibida);
                             //actualizar tabla
+                            tablaIncidencias();
                             JOptionPane.showMessageDialog(null, String.format("Incidencia con codigo %d\nClasificación: %s\n%s", incidenciaRecibida.getCodigo(), incidenciaRecibida.getCategoria(), incidenciaRecibida.getEstimacionTiempo()), "Incidencia creada", JOptionPane.INFORMATION_MESSAGE);
 
                         } else {
@@ -90,9 +83,10 @@ public class V_incidencia extends JDialog {
                         }
 
                     } catch (IOException ex) {
-                        System.out.println("Error al escribir: " + ex.getMessage());
+                        System.out.println("Error al leer o escribir: " + ex.getMessage());
                     } catch (ClassNotFoundException ex) {
-                        throw new RuntimeException(ex);
+                        System.out.println("Error, no se encontro la clase: " + ex.getMessage());
+
                     }
                 }
 
@@ -107,15 +101,16 @@ public class V_incidencia extends JDialog {
                 ta_descripcion.setText("");
             }
         });
-        verIncidenciasButton.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-
-            }
-        });
     }
 
     public JPanel getPanelPrincipal() {
         return panelPrincipal;
+    }
+
+    private void tablaIncidencias() {
+        tablaIncidencias = new JTable();
+        IncidenciaTableModel incidenciasTableModel = new IncidenciaTableModel(listaIncidencias);
+        tablaIncidencias.setModel(incidenciasTableModel);
+        jsp_incidencias.setViewportView(tablaIncidencias);
     }
 }
