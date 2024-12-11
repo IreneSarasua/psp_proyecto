@@ -48,12 +48,6 @@ public class V_login {
         yo = this;
         panel_registro.setVisible(false);
         panel_login.setVisible(true);
-        try {
-            salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
-            lectura = new ObjectInputStream(Cliente.cliente.getInputStream()); // recibimos infprmación
-        } catch (IOException e) {
-            System.out.println("Error al leer o esctibir: " + e.getMessage());
-        }
 
 
         vActual.addWindowListener(new WindowAdapter() {
@@ -61,9 +55,11 @@ public class V_login {
             public void windowClosing(java.awt.event.WindowEvent windowEvent) {
                Mensaje mensaje = new Mensaje(TipoMensaje.LOGOUT);
                 try {
+                    salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
                     salida.writeObject(mensaje);
                     lectura.close();
                     salida.close();
+                    Cliente.cliente.close();
                 } catch (IOException e) {
                     System.out.printf("Error al cerrar: %s", e.getMessage());
                 }
@@ -80,33 +76,39 @@ public class V_login {
                 u.setUsuario(tf_username.getText());
                 u.setPassTexto(new String(passf.getPassword()));
                 Mensaje mensaje = new Mensaje(TipoMensaje.LOGIN, u);
-                try {
 
+                try {
+                    //Enviamos mensaje
+                    salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
                     salida.writeObject(mensaje);
 
+                    //Recivimos respuesta
+                    lectura = new ObjectInputStream(Cliente.cliente.getInputStream()); // recibimos infprmación
                     mensaje = (Mensaje) lectura.readObject();
                     System.out.println(mensaje.getUsuario());
-                    if (mensaje.getUsuario()!=null) {
-                        limpiar();
-                        V_incidencia wizard = new V_incidencia(mensaje.getUsuario());
-                        wizard.setSize(380, 430);
-                        wizard.setLocationRelativeTo(yo.panelPrincipal);
-                        wizard.setVisible(true);
 
 
-                    } else if(!mensaje.getMensajeError().isEmpty()){
-                        JOptionPane.showMessageDialog(panelPrincipal, mensaje.getMensajeError(), "Login", JOptionPane.INFORMATION_MESSAGE);
-                    } else {
-                        JOptionPane.showMessageDialog(panelPrincipal, "No se pudo conectar, intentelo más tarde.", "Login", JOptionPane.INFORMATION_MESSAGE);
-
-                    }
-
-                } catch (ClassNotFoundException ex) {
-                    System.out.printf("Error al leer la respuesta: %s", ex.getMessage());
                 } catch (IOException ex) {
-                    System.out.printf("Error: %s", ex.getMessage());
+                    System.out.println("Error al leer o esctibir: " + ex.getMessage());
+                    mensaje.setUsuario(null);
+                } catch (ClassNotFoundException ex) {
+                    System.out.println("Error, clase no encontrada: " + ex.getMessage());
+                    mensaje.setUsuario(null);
                 }
+                if (mensaje.getUsuario()!=null) {
+                    limpiar();
+                    V_incidencia wizard = new V_incidencia(mensaje.getUsuario());
+                    wizard.setSize(380, 430);
+                    wizard.setLocationRelativeTo(yo.panelPrincipal);
+                    wizard.setVisible(true);
 
+
+                } else if(mensaje.getMensajeError()!=null && !mensaje.getMensajeError().isEmpty()){
+                    JOptionPane.showMessageDialog(panelPrincipal, mensaje.getMensajeError(), "Login", JOptionPane.INFORMATION_MESSAGE);
+                } else {
+                    JOptionPane.showMessageDialog(panelPrincipal, "No se pudo conectar, intentelo más tarde.", "Login", JOptionPane.INFORMATION_MESSAGE);
+
+                }
             }
         });
         btn_registrarse.addActionListener(new ActionListener() {

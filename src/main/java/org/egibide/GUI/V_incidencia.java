@@ -51,13 +51,15 @@ public class V_incidencia extends JDialog {
         setSize(500, 160);
 
         tf_usuario.setText(usuario.toString());
-
+/*
         try {
             salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
             lectura = new ObjectInputStream(Cliente.cliente.getInputStream()); // recibimos infprmación
         } catch (IOException e) {
             System.out.println("Error al leer o esctibir: " + e.getMessage());
         }
+
+ */
 
 
         enviarButton.addActionListener(new ActionListener() {
@@ -70,9 +72,12 @@ public class V_incidencia extends JDialog {
                     Mensaje mensaje = new Mensaje(TipoMensaje.INCIDENCIA, incidencia);
                     // encriptar y escribir
                     try {
+                        salida = new ObjectOutputStream(Cliente.cliente.getOutputStream());
                         salida.writeObject(mensaje);
 
+                        lectura = new ObjectInputStream(Cliente.cliente.getInputStream()); // recibimos infprmación
                         Mensaje mensajeRecibido = (Mensaje) lectura.readObject();
+
                         Incidencia incidenciaRecibida = mensajeRecibido.getIncidencia();
                         if (incidenciaRecibida != null) {
                             listaIncidencias.add(incidenciaRecibida);

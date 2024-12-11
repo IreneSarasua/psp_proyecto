@@ -28,12 +28,7 @@ public class HiloServidor extends Thread {
 
     public HiloServidor(SSLSocket cliente) {
         this.cliente = cliente;
-        try {
-            //salida = new ObjectOutputStream(cliente.getOutputStream());
-            lectura = new ObjectInputStream(cliente.getInputStream()); // recibimos infprmación
-        } catch (IOException e) {
-            System.out.println("Error al leer o esctibir: " + e.getMessage());
-        }
+
     }
 
     @Override
@@ -41,42 +36,46 @@ public class HiloServidor extends Thread {
         // Escribir....
         System.out.println("Atendiendo petición");
 
-        try {
-
-            while (continuar) {
-                salida = new ObjectOutputStream(cliente.getOutputStream()); // enviamos información
-
-                //ObjectInputStream lectura = new ObjectInputStream(cliente.getInputStream()); // recibimos infprmación
+        while (continuar && !cliente.isClosed()) {
+            try {
+                System.out.println("Socket closed: " + cliente.isClosed());
+                lectura = new ObjectInputStream(cliente.getInputStream()); // recibimos infprmación
                 Mensaje mensaje = (Mensaje) lectura.readObject();
 
                 System.out.println("Leyendo mensaje");
-
                 switch (mensaje.getTipomensaje()) {
                     case LOGIN -> login(mensaje);
                     case INCIDENCIA -> incidencia(mensaje);
                     case REGISTRO -> registro(mensaje);
                     case LOGOUT -> continuar = false;
                 }
-
+            } catch (IOException | NoSuchAlgorithmException e) {
+                System.out.println("Error al leer: " + e.getMessage());
+            } catch (ClassNotFoundException e) {
+                System.out.println("Error, no se encontro  la clase: " + e.getMessage());
             }
-            System.out.println("Saliendo");
-            salida.close();
-            lectura.close();
-            cliente.close();
-        } catch (ClassNotFoundException e) {
-            System.out.println("Error al cargar el objeto: " + e.getMessage());
-        } catch (NoSuchAlgorithmException e) {
-            System.out.println("Error al comprobar la contraseña: " + e.getMessage());
+        }
+        System.out.println("Saliendo");
+
+        try {
+            if (salida != null) {
+                salida.close();
+            }
+            if (lectura != null) {
+                lectura.close();
+            }
+            if (!cliente.isClosed()) {
+                cliente.close();
+            }
         } catch (IOException e) {
-            System.out.println("Error inesperado: " + e.getMessage());
+            System.out.println("Error al cerrar el socket: " + e.getMessage());
         }
     }
 
 
-    public void login(Mensaje mensaje) throws NoSuchAlgorithmException, IOException {
+    public void login(Mensaje mensaje) throws NoSuchAlgorithmException {
         Usuario usuarioRecivido = mensaje.getUsuario();
         usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
-//        ObjectOutputStream salida = new ObjectOutputStream(cliente.getOutputStream()); // enviamos información
 
         this.usuario = Servidor.usuarios.get(usuarioRecivido.getUsuario());
         if (usuario != null) {
@@ -91,17 +90,22 @@ public class HiloServidor extends Thread {
             mensaje.setUsuario(null);
             mensaje.setMensajeError("Usuario o contraseña incorrectas.");
         }
-        salida.writeObject(mensaje);
-        System.out.println("Enviando mensaje");
 
-//        salida.close();
+        try {
+            salida = new ObjectOutputStream(cliente.getOutputStream());
+            salida.writeObject(mensaje);
+            System.out.println("Enviando mensaje");
+        } catch (IOException e) {
+            System.out.println("Error al esctibir: " + e.getMessage());
+        }
+
     }
 
     public void registro(Mensaje mensaje) {
 
     }
 
-    public void incidencia(Mensaje mensaje) throws IOException {
+    public void incidencia(Mensaje mensaje) {
         Incidencia incidencia = mensaje.getIncidencia();
         incidencia.setCodigo(Servidor.addIncidencia());
         Random rand = new Random();
@@ -109,7 +113,15 @@ public class HiloServidor extends Thread {
         incidencia.calcularTiempo();
         mensaje.setIncidencia(incidencia);
 
-        salida.writeObject(mensaje);
+        try {
+            salida = new ObjectOutputStream(cliente.getOutputStream());
+            salida.writeObject(mensaje);
+            System.out.println("Enviando mensaje");
+
+            salida.close();
+        } catch (IOException e) {
+            System.out.println("Error al leer o esctibir: " + e.getMessage());
+        }
 
     }
 
