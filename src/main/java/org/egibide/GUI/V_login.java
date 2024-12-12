@@ -70,7 +70,7 @@ public class V_login {
                     if (salida != null) {
                         salida.close();
                     }
-                    if(!Cliente.cliente.isClosed()){
+                    if (!Cliente.cliente.isClosed()) {
                         Cliente.cliente.close();
                     }
 
@@ -160,11 +160,14 @@ public class V_login {
 
                 } else {
                     JOptionPane.showMessageDialog(panelPrincipal, """
-                                    Se deben rellenar todos los campos correctamente.
-                                    - Edad: Mayor o igual a 16 años.
-                                    - Email: debe conntener un @ y al menos un . después
-                                    - Contraseña: de 6 a 12 caracteres, debe contener minusculas, mayusculas, numeros y caracteres especiales.
-                                   """
+                                     Se deben rellenar todos los campos correctamente.
+                                     - Usuario: Máximo 20 caracteres.
+                                     - Nombre: Máximo 50 caracteres.
+                                     - Apellido: Máximo 80 caracteres.
+                                     - Edad: Mayor o igual a 16 años y menor o igual a 130.
+                                     - Email: debe conntener un @ y al menos un . después
+                                     - Contraseña: de 6 a 12 caracteres, debe contener minusculas, mayusculas, numeros y caracteres especiales.
+                                    """
                             , "Registro", JOptionPane.INFORMATION_MESSAGE);
 
                 }
@@ -177,8 +180,11 @@ public class V_login {
         if (tf_username2.getText().trim().isEmpty() || tf_nombre.getText().trim().isEmpty() || tf_apellido.getText().trim().isEmpty() || tf_email.getText().trim().isEmpty() || new String(passf_2.getPassword()).isEmpty()) {
             return false;
         } else {
+            if (tf_username2.getText().length() > 20 || tf_nombre.getText().length() > 50 || tf_apellido.getText().length() > 80) {
+                return false;
+            }
             String password = new String(passf_2.getPassword());
-            if (!password.matches("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\\w\\d\\s:])(\\S){6,12}$")){
+            if (!password.matches("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\\w\\d\\s:])(\\S){6,12}$")) {
                 return false;
             }
             return tf_email.getText().matches("^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)*\\w[\\w-]{0,20})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$");
