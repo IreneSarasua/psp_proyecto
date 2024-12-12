@@ -162,10 +162,9 @@ public class V_login {
                     JOptionPane.showMessageDialog(panelPrincipal, """
                                     Se deben rellenar todos los campos correctamente.
                                     - Edad: Mayor o igual a 16 años.
-                                    - Email: con un @
-                                    - Contraseña: minimo 6 caracteres, debe contener minusculas, mayusculas y numeros. 
-                                                  Puede contener los caracteres especiales (, ?, y !.
-                                    """
+                                    - Email: debe conntener un @ y al menos un . después
+                                    - Contraseña: de 6 a 12 caracteres, debe contener minusculas, mayusculas, numeros y caracteres especiales.
+                                   """
                             , "Registro", JOptionPane.INFORMATION_MESSAGE);
 
                 }
@@ -178,7 +177,11 @@ public class V_login {
         if (tf_username2.getText().trim().isEmpty() || tf_nombre.getText().trim().isEmpty() || tf_apellido.getText().trim().isEmpty() || tf_email.getText().trim().isEmpty() || new String(passf_2.getPassword()).isEmpty()) {
             return false;
         } else {
-            return true;
+            String password = new String(passf_2.getPassword());
+            if (!password.matches("^(?=.*\\d)(?=.*[A-Z])(?=.*[a-z])(?=.*[^\\w\\d\\s:])(\\S){6,12}$")){
+                return false;
+            }
+            return tf_email.getText().matches("^([\\w-]+(?:\\.[\\w-]+)*)@((?:[\\w-]+\\.)*\\w[\\w-]{0,20})\\.([a-z]{2,6}(?:\\.[a-z]{2})?)$");
         }
 
         //return false;
