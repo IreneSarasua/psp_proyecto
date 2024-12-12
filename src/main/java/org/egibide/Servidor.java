@@ -3,19 +3,28 @@ package org.egibide;
 import org.egibide.Modelo.Usuario;
 import org.egibide.utils.General;
 
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
 import javax.net.ssl.SSLServerSocket;
 import javax.net.ssl.SSLServerSocketFactory;
 import javax.net.ssl.SSLSocket;
 import java.io.IOException;
 
+import java.security.KeyPair;
+import java.security.KeyStore;
 import java.security.NoSuchAlgorithmException;
 import java.util.HashMap;
 
 public class Servidor {
     public static HashMap<String, Usuario> usuarios = new HashMap<>();
+    // Variable para guardar el numero de incidenci recogidas por el servidor.
     public static int numIncidencia = 0;
+    public static KeyPair serverKeys;
+    public static SecretKey secretkey;
+
 
     public static void main(String[] args) {
+        //Usuario de prueba
         try {
             Usuario usuario = new Usuario();
             usuario.setUsuario("admin");
@@ -39,14 +48,22 @@ public class Servidor {
             servidorSSL = (SSLServerSocket) sfact.createServerSocket(puerto);
 
             System.out.println("servidor preparado");
+            //Generar claves
+            serverKeys = General.generarParClaves("RSA");
+
+            KeyGenerator keyGenerator = KeyGenerator.getInstance("AES");
+            keyGenerator.init(128);
+            secretkey = keyGenerator.generateKey();
+
 
             while (true) {
                 SSLSocket clienteConectado = (SSLSocket) servidorSSL.accept();
                 HiloServidor mihilo = new HiloServidor(clienteConectado);
                 mihilo.start();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Error: " + e.getMessage());
+
         }
 
 
@@ -55,6 +72,7 @@ public class Servidor {
     public static synchronized void addUsuario(Usuario usuario) {
         usuarios.put(usuario.getUsuario(), usuario);
     }
+
     public static synchronized int addIncidencia() {
         numIncidencia++;
         return numIncidencia;

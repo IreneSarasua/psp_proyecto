@@ -1,5 +1,9 @@
 package org.egibide.Modelo;
 
+import org.apache.commons.lang3.SerializationUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Random;
 
@@ -95,20 +99,20 @@ public class Incidencia implements Serializable {
         Random rand = new Random();
         if (categoria != null) {
             switch (categoria) {
-                case LEVE ->{
+                case LEVE -> {
                     num1 = rand.nextInt(4);
-                    num2 = num1 + rand.nextInt(9);
+                    num2 = num1 + rand.nextInt(1, 9);
                     texto = String.format("Estimación de tiempos: de %d a %d meses", num1, num2);
                 }
                 case MODERADA -> {
                     num1 = rand.nextInt(4);
-                    num2 = num1 + rand.nextInt(10);
+                    num2 = num1 + rand.nextInt(1, 10);
                     texto = String.format("Estimación de tiempos: de %d a %d semanas", num1, num2);
 
                 }
                 case URGENTE -> {
                     num1 = rand.nextInt(4);
-                    num2 = num1 + rand.nextInt(49);
+                    num2 = num1 + rand.nextInt(1, 49);
                     texto = String.format("Estimación de tiempos: de %d a %d horas", num1, num2);
                 }
                 default -> {
@@ -120,4 +124,12 @@ public class Incidencia implements Serializable {
     }
 
 
+    public byte[] getBytes() {
+        //String texto = String.format("%s-%s-%s-%s", asunto, lugar, descripcion, usuario.getUsuario());
+        return SerializationUtils.serialize(this);
+    }
+
+    public static Incidencia toIncidencia(byte[] data) {
+        return SerializationUtils.deserialize(data);
+    }
 }

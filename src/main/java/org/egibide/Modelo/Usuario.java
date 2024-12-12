@@ -6,7 +6,7 @@ import java.time.LocalDate;
 public class Usuario implements Serializable {
     private String nombre;
     private String apellido;
-    private LocalDate fechaNacimiento;
+    //private LocalDate fechaNacimiento;
     private int edad;
     private String email;
     private String usuario;
@@ -17,19 +17,17 @@ public class Usuario implements Serializable {
     public Usuario() {
     }
 
-    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, String email, String usuario, byte[] pass) {
+    public Usuario(String nombre, String apellido, String email, String usuario, byte[] pass) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.fechaNacimiento = fechaNacimiento;
         this.email = email;
         this.usuario = usuario;
         this.pass = pass;
     }
 
-    public Usuario(String nombre, String apellido, LocalDate fechaNacimiento, int edad, String email, String usuario, String passTexto) {
+    public Usuario(String nombre, String apellido, int edad, String email, String usuario, String passTexto) {
         this.nombre = nombre;
         this.apellido = apellido;
-        this.fechaNacimiento = fechaNacimiento;
         this.edad = edad;
         this.email = email;
         this.usuario = usuario;
@@ -52,14 +50,6 @@ public class Usuario implements Serializable {
 
     public void setApellido(String apellido) {
         this.apellido = apellido;
-    }
-
-    public LocalDate getFechaNacimiento() {
-        return fechaNacimiento;
-    }
-
-    public void setFechaNacimiento(LocalDate fechaNacimiento) {
-        this.fechaNacimiento = fechaNacimiento;
     }
 
     public int getEdad() {

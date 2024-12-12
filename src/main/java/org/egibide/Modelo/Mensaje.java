@@ -1,11 +1,16 @@
 package org.egibide.Modelo;
 
+import org.apache.commons.lang3.SerializationUtils;
+
 import java.io.Serializable;
+import java.security.PublicKey;
 
 public class Mensaje implements Serializable {
     private TipoMensaje tipomensaje;
     private Usuario usuario;
-    private Incidencia incidencia;
+    private Incidencia incidenciaOriginal;
+    private byte[] incidenciaFirmada;
+    private PublicKey publicKey;
     private String mensajeError;
 
     // region Constructores
@@ -22,9 +27,11 @@ public class Mensaje implements Serializable {
         this.usuario = usuario;
     }
 
-    public Mensaje(TipoMensaje tipomensaje, Incidencia incidencia) {
+    public Mensaje(TipoMensaje tipomensaje, Incidencia incidenciaOriginal, byte[] incidenciaFirmada, PublicKey publicKey) {
         this.tipomensaje = tipomensaje;
-        this.incidencia = incidencia;
+        this.incidenciaOriginal = incidenciaOriginal;
+        this.incidenciaFirmada = incidenciaFirmada;
+        this.publicKey = publicKey;
     }
 
     // endregion
@@ -46,12 +53,28 @@ public class Mensaje implements Serializable {
         this.usuario = usuario;
     }
 
-    public Incidencia getIncidencia() {
-        return incidencia;
+    public Incidencia getIncidenciaOriginal() {
+        return incidenciaOriginal;
     }
 
-    public void setIncidencia(Incidencia incidencia) {
-        this.incidencia = incidencia;
+    public void setIncidenciaOriginal(Incidencia incidenciaOriginal) {
+        this.incidenciaOriginal = incidenciaOriginal;
+    }
+
+    public byte[] getIncidenciaFirmada() {
+        return incidenciaFirmada;
+    }
+
+    public void setIncidenciaFirmada(byte[] incidenciaFirmada) {
+        this.incidenciaFirmada = incidenciaFirmada;
+    }
+
+    public PublicKey getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(PublicKey publicKey) {
+        this.publicKey = publicKey;
     }
 
     public String getMensajeError() {
@@ -64,5 +87,13 @@ public class Mensaje implements Serializable {
 
     // endregion
 
+
+    public byte[] getBytes() {
+        return SerializationUtils.serialize(this);
+    }
+
+    public static Mensaje toMensaje(byte[] data) {
+        return SerializationUtils.deserialize(data);
+    }
 
 }
