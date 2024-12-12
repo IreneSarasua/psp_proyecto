@@ -64,9 +64,16 @@ public class V_login {
                 Mensaje mensaje = new Mensaje(TipoMensaje.LOGOUT);
                 try {
                     enviarMensaje(mensaje);
-                    lectura.close();
-                    salida.close();
-                    Cliente.cliente.close();
+                    if (lectura != null) {
+                        lectura.close();
+                    }
+                    if (salida != null) {
+                        salida.close();
+                    }
+                    if(!Cliente.cliente.isClosed()){
+                        Cliente.cliente.close();
+                    }
+
                 } catch (IOException e) {
                     System.out.printf("Error al cerrar: %s", e.getMessage());
                 }
@@ -110,6 +117,7 @@ public class V_login {
         btn_registrarse.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
+                limpiar();
                 panel_registro.setVisible(true);
                 panel_login.setVisible(false);
                 vActual.pack();
@@ -130,7 +138,7 @@ public class V_login {
             public void actionPerformed(ActionEvent e) {
                 if (validar()) {
                     System.out.println("valido");
-                    Usuario u = new Usuario(tf_nombre.getText(), tf_apellido.getText(), (Integer) sp_edad.getModel().getValue(), tf_email.getText(), tf_username2.getText(), new String(passf.getPassword()));
+                    Usuario u = new Usuario(tf_nombre.getText(), tf_apellido.getText(), (Integer) sp_edad.getModel().getValue(), tf_email.getText(), tf_username2.getText(), new String(passf_2.getPassword()));
 
                     Mensaje mensaje = new Mensaje(TipoMensaje.REGISTRO, u);
                     enviarMensaje(mensaje);
@@ -147,7 +155,7 @@ public class V_login {
                     } else if (mensaje != null && mensaje.getMensajeError() != null && !mensaje.getMensajeError().isEmpty()) {
                         JOptionPane.showMessageDialog(panelPrincipal, mensaje.getMensajeError(), "Registro", JOptionPane.INFORMATION_MESSAGE);
                     } else {
-                        JOptionPane.showMessageDialog(panelPrincipal, "No se pudo conectar, intentelo más tarde.", "Login", JOptionPane.INFORMATION_MESSAGE);
+                        JOptionPane.showMessageDialog(panelPrincipal, "No se pudo conectar, intentelo más tarde.", "Registro", JOptionPane.INFORMATION_MESSAGE);
                     }
 
                 } else {
@@ -167,8 +175,13 @@ public class V_login {
 
 
     private boolean validar() {
+        if (tf_username2.getText().trim().isEmpty() || tf_nombre.getText().trim().isEmpty() || tf_apellido.getText().trim().isEmpty() || tf_email.getText().trim().isEmpty() || new String(passf_2.getPassword()).isEmpty()) {
+            return false;
+        } else {
+            return true;
+        }
 
-        return false;
+        //return false;
     }
 
     private void limpiar() {

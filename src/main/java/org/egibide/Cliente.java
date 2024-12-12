@@ -30,6 +30,7 @@ public class Cliente {
         System.out.println("Programa cliente iniciado..");
         System.setProperty("javax.net.ssl.trustStore", "certificados\\AlmacenSSL.jks");
         System.setProperty("javax.net.ssl.trustStorePassword", "12345Abcde");
+
         SSLSocketFactory sfact = (SSLSocketFactory) SSLSocketFactory.getDefault();
         try {
             cliente = (SSLSocket) sfact.createSocket(host, puerto);

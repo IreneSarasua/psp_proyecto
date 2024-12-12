@@ -1,9 +1,6 @@
 package org.egibide;
 
-import org.egibide.Modelo.Categoria;
-import org.egibide.Modelo.Incidencia;
-import org.egibide.Modelo.Mensaje;
-import org.egibide.Modelo.Usuario;
+import org.egibide.Modelo.*;
 import org.egibide.utils.General;
 
 import javax.net.ssl.SSLSocket;
@@ -18,7 +15,6 @@ import java.util.Random;
 public class HiloServidor extends Thread {
 
     private SSLSocket cliente;
-    private Usuario usuario;
     private boolean continuar = true;
     private PublicKey clientKey = null;
 
@@ -46,7 +42,7 @@ public class HiloServidor extends Thread {
             System.out.println("Reciviendo clave cliente");
 
             salida = new ObjectOutputStream(cliente.getOutputStream());
-            byte[] conAsim = General.cifrarConClavePublica(Servidor.secretkey.getEncoded() ,clientKey, "RSA");
+            byte[] conAsim = General.cifrarConClavePublica(Servidor.secretkey.getEncoded(), clientKey, "RSA");
             salida.writeObject(conAsim);
             System.out.println("Enviando clave simetrica");
 
@@ -105,12 +101,11 @@ public class HiloServidor extends Thread {
         Usuario usuarioRecivido = mensaje.getUsuario();
         usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
 
-        this.usuario = Servidor.usuarios.get(usuarioRecivido.getUsuario());
+        Usuario usuario = Servidor.usuarios.get(usuarioRecivido.getUsuario());
         if (usuario != null) {
             if (Arrays.equals(usuario.getPass(), usuarioRecivido.getPass())) {
                 mensaje.setUsuario(usuario);
             } else {
-                usuario = null;
                 mensaje.setUsuario(null);
                 mensaje.setMensajeError("Usuario o contraseña incorrectas.");
             }
@@ -123,7 +118,37 @@ public class HiloServidor extends Thread {
 
     }
 
+    /**
+     * Recoge la información, comprueba si existe un usuario con ese username y en caso de que
+     * no exista, genera la contraseña y lo guarda en el hashmap. <br/>
+     * Devuelve el mensaje con el usuario y si no se ha creado envia el mensaje.
+     * @param mensaje objeto que contiene la informacion
+     */
     public void registro(Mensaje mensaje) {
+        Usuario usuarioRecivido = mensaje.getUsuario();
+
+        if (usuarioRecivido != null && Servidor.usuarios.containsKey(usuarioRecivido.getUsuario())) {
+            mensaje = new Mensaje(TipoMensaje.REGISTRO);
+            mensaje.setMensajeError("Nombre de usuario ya existente, prueba con otro nombre.");
+        } else if (usuarioRecivido != null) {
+            try {
+                usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
+                usuarioRecivido.setPassTexto(""); // Vaciar este campo, no me interesa guardarlo en bbdd
+                Servidor.usuarios.put(usuarioRecivido.getUsuario(), usuarioRecivido);
+                mensaje.setUsuario(usuarioRecivido);
+            } catch (NoSuchAlgorithmException e) {
+                System.out.println("Error al configurar la contraseña: " + e.getMessage());
+                mensaje = new Mensaje(TipoMensaje.REGISTRO);
+                mensaje.setMensajeError("Error inesperado al guardar el registro. Sentimos las molestias.");
+            }
+        } else {
+            mensaje = new Mensaje(TipoMensaje.REGISTRO);
+            mensaje.setMensajeError("Error en el envio.");
+        }
+
+        enviarMensaje(mensaje);
+        System.out.println("Enviando respuesta registro");
+
 
     }
 
