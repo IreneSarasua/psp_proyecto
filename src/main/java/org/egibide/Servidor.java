@@ -25,6 +25,7 @@ public class Servidor {
 
     public static void main(String[] args) {
         //Usuario de prueba
+        /*
         try {
             Usuario usuario = new Usuario();
             usuario.setUsuario("admin");
@@ -33,7 +34,7 @@ public class Servidor {
             usuarios.put(usuario.getUsuario(), usuario);
         } catch (NoSuchAlgorithmException e) {
             System.out.println("No se ha encontrado la implementación del algoritmo.");
-        }
+        }*/
 
 
         int puerto = 6001;
@@ -85,7 +86,7 @@ public class Servidor {
 
     /*
     //ruta: C:\Users\9FDAM01\.jdks\openjdk-22.0.2\bin -> keytool.exe
-    los comandos para el certificado:
+    los comandos que usé para el certificado:
     keytool -genkey -keyalg RSA -alias claveSSL1 -keystore "C:\Users\9FDAM01\Documents\psp\psp_proyecto\certificados\AlmacenSSL.jks" -storepass 12345Abcde
 
     keytool -export -keystore "C:\Users\9FDAM01\Documents\psp\psp_proyecto\certificados\AlmacenSSL.jks" -alias claveSSL1 -file Certificado.cer

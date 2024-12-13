@@ -66,8 +66,6 @@ public class HiloServidor extends Thread {
                             case LOGOUT -> continuar = false;
                         }
                     }
-                } catch (NoSuchAlgorithmException e) {
-                    System.out.println("Error al leer: " + e.getMessage());
                 } catch (Exception e) {
                     System.out.println("Error al cifrar o descifrar: " + e.getMessage());
                 }
@@ -95,14 +93,13 @@ public class HiloServidor extends Thread {
      * <br/>En caso contrario, se devuelve el mensaje con el usuarío a null y un mensaje de error.
      *
      * @param mensaje objeto que contiene la informacion
-     * @throws NoSuchAlgorithmException si no encuenta el algoritmo para el hash de la contraseña
      */
-    public void login(Mensaje mensaje) throws NoSuchAlgorithmException {
+    public void login(Mensaje mensaje) {
         Usuario usuarioRecivido = mensaje.getUsuario();
-        usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
+        //usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
 
         Usuario usuario = Servidor.usuarios.get(usuarioRecivido.getUsuario());
-        if (usuario != null) {
+        if (usuario != null && usuarioRecivido.getPass() != null) {
             if (Arrays.equals(usuario.getPass(), usuarioRecivido.getPass())) {
                 mensaje.setUsuario(usuario);
             } else {
@@ -122,6 +119,7 @@ public class HiloServidor extends Thread {
      * Recoge la información, comprueba si existe un usuario con ese username y en caso de que
      * no exista, genera la contraseña y lo guarda en el hashmap. <br/>
      * Devuelve el mensaje con el usuario y si no se ha creado envia el mensaje.
+     *
      * @param mensaje objeto que contiene la informacion
      */
     public void registro(Mensaje mensaje) {
@@ -130,17 +128,11 @@ public class HiloServidor extends Thread {
         if (usuarioRecivido != null && Servidor.usuarios.containsKey(usuarioRecivido.getUsuario())) {
             mensaje = new Mensaje(TipoMensaje.REGISTRO);
             mensaje.setMensajeError("Nombre de usuario ya existente, prueba con otro nombre.");
-        } else if (usuarioRecivido != null) {
-            try {
-                usuarioRecivido.setPass(General.elHash("SHA-256", usuarioRecivido.getPassTexto()));
-                usuarioRecivido.setPassTexto(""); // Vaciar este campo, no me interesa guardarlo en bbdd
-                Servidor.usuarios.put(usuarioRecivido.getUsuario(), usuarioRecivido);
-                mensaje.setUsuario(usuarioRecivido);
-            } catch (NoSuchAlgorithmException e) {
-                System.out.println("Error al configurar la contraseña: " + e.getMessage());
-                mensaje = new Mensaje(TipoMensaje.REGISTRO);
-                mensaje.setMensajeError("Error inesperado al guardar el registro. Sentimos las molestias.");
-            }
+        } else if (usuarioRecivido != null && usuarioRecivido.getPass() != null) {
+
+            Servidor.usuarios.put(usuarioRecivido.getUsuario(), usuarioRecivido);
+            mensaje.setUsuario(usuarioRecivido);
+
         } else {
             mensaje = new Mensaje(TipoMensaje.REGISTRO);
             mensaje.setMensajeError("Error en el envio.");

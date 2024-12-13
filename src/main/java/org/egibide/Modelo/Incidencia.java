@@ -2,8 +2,7 @@ package org.egibide.Modelo;
 
 import org.apache.commons.lang3.SerializationUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.ObjectOutputStream;
+
 import java.io.Serializable;
 import java.util.Random;
 
@@ -100,18 +99,18 @@ public class Incidencia implements Serializable {
         if (categoria != null) {
             switch (categoria) {
                 case LEVE -> {
-                    num1 = rand.nextInt(4);
+                    num1 = rand.nextInt(1,4);
                     num2 = num1 + rand.nextInt(1, 9);
                     texto = String.format("Estimación de tiempos: de %d a %d meses", num1, num2);
                 }
                 case MODERADA -> {
-                    num1 = rand.nextInt(4);
+                    num1 = rand.nextInt(1,4);
                     num2 = num1 + rand.nextInt(1, 10);
                     texto = String.format("Estimación de tiempos: de %d a %d semanas", num1, num2);
 
                 }
                 case URGENTE -> {
-                    num1 = rand.nextInt(4);
+                    num1 = rand.nextInt(1,4);
                     num2 = num1 + rand.nextInt(1, 49);
                     texto = String.format("Estimación de tiempos: de %d a %d horas", num1, num2);
                 }

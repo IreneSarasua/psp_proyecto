@@ -88,6 +88,8 @@ public class Mensaje implements Serializable {
     // endregion
 
 
+    // Funciones utilizadas para pasar el objeto a byte[] y viceversa utilizadas para cifrar el objeto y descifrar
+
     public byte[] getBytes() {
         return SerializationUtils.serialize(this);
     }

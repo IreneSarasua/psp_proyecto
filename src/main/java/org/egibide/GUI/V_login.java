@@ -13,6 +13,7 @@ import java.awt.event.WindowAdapter;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.security.NoSuchAlgorithmException;
 
 
 public class V_login {
@@ -85,32 +86,43 @@ public class V_login {
         btn_acceder.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-
-                Usuario u = new Usuario();
-                u.setUsuario(tf_username.getText());
-                u.setPassTexto(new String(passf.getPassword()));
-                Mensaje mensaje = new Mensaje(TipoMensaje.LOGIN, u);
-
-                //Enviamos mensaje
-                enviarMensaje(mensaje);
-
-                //Recivimos respuesta
-                mensaje = leerMensaje();
-                System.out.println("Leyendo mensaje");
-
-                if (mensaje != null && mensaje.getUsuario() != null) {
-                    limpiar();
-                    V_incidencia wizard = new V_incidencia(mensaje.getUsuario());
-                    wizard.setSize(380, 430);
-                    wizard.setLocationRelativeTo(yo.panelPrincipal);
-                    wizard.setVisible(true);
+                if (!tf_username.getText().trim().isEmpty() && !new String(passf.getPassword()).trim().isEmpty()) {
 
 
-                } else if (mensaje != null && mensaje.getMensajeError() != null && !mensaje.getMensajeError().isEmpty()) {
-                    JOptionPane.showMessageDialog(panelPrincipal, mensaje.getMensajeError(), "Login", JOptionPane.INFORMATION_MESSAGE);
+                    Usuario u = new Usuario();
+                    u.setUsuario(tf_username.getText());
+                    u.setPassTexto(new String(passf.getPassword()));
+                    try {
+                        u.setPass(General.elHash("SHA-256", u.getPassTexto()));
+                    } catch (NoSuchAlgorithmException ex) {
+                        System.out.println("Algoritmo no encontrado");
+                    }
+                    u.setPassTexto("");// No debo envar la contraseña en plano
+                    Mensaje mensaje = new Mensaje(TipoMensaje.LOGIN, u);
+
+                    //Enviamos mensaje
+                    enviarMensaje(mensaje);
+
+                    //Recivimos respuesta
+                    mensaje = leerMensaje();
+                    System.out.println("Leyendo mensaje");
+
+                    if (mensaje != null && mensaje.getUsuario() != null) {
+                        limpiar();
+                        V_incidencia wizard = new V_incidencia(mensaje.getUsuario());
+                        wizard.setSize(380, 430);
+                        wizard.setLocationRelativeTo(yo.panelPrincipal);
+                        wizard.setVisible(true);
+
+
+                    } else if (mensaje != null && mensaje.getMensajeError() != null && !mensaje.getMensajeError().isEmpty()) {
+                        JOptionPane.showMessageDialog(panelPrincipal, mensaje.getMensajeError(), "Login", JOptionPane.INFORMATION_MESSAGE);
+                    } else {
+                        JOptionPane.showMessageDialog(panelPrincipal, "No se pudo conectar, intentelo más tarde.", "Login", JOptionPane.INFORMATION_MESSAGE);
+
+                    }
                 } else {
-                    JOptionPane.showMessageDialog(panelPrincipal, "No se pudo conectar, intentelo más tarde.", "Login", JOptionPane.INFORMATION_MESSAGE);
-
+                    JOptionPane.showMessageDialog(panelPrincipal, "Rellena los dos campos", "Login", JOptionPane.INFORMATION_MESSAGE);
                 }
             }
         });
@@ -140,6 +152,13 @@ public class V_login {
                     System.out.println("valido");
                     Usuario u = new Usuario(tf_nombre.getText(), tf_apellido.getText(), (Integer) sp_edad.getModel().getValue(), tf_email.getText(), tf_username2.getText(), new String(passf_2.getPassword()));
 
+                    try {
+                        u.setPass(General.elHash("SHA-256", u.getPassTexto()));
+                    } catch (NoSuchAlgorithmException ex) {
+                        System.out.println("Algoritmo no encontrado");
+                    }
+                    u.setPassTexto("");// No debo envar la contraseña en plano
+
                     Mensaje mensaje = new Mensaje(TipoMensaje.REGISTRO, u);
                     enviarMensaje(mensaje);
                     mensaje = leerMensaje();
@@ -165,8 +184,8 @@ public class V_login {
                                      - Nombre: Máximo 50 caracteres.
                                      - Apellido: Máximo 80 caracteres.
                                      - Edad: Mayor o igual a 16 años y menor o igual a 130.
-                                     - Email: debe conntener un @ y al menos un . después
-                                     - Contraseña: de 6 a 12 caracteres, debe contener minusculas, mayusculas, numeros y caracteres especiales.
+                                     - Email: debe contener un @ y al menos un . después
+                                     - Contraseña: de 6 a 12 caracteres, debe contener minúsculas, mayúsculas, números y caracteres especiales.
                                     """
                             , "Registro", JOptionPane.INFORMATION_MESSAGE);
 
@@ -177,7 +196,7 @@ public class V_login {
 
 
     private boolean validar() {
-        if (tf_username2.getText().trim().isEmpty() || tf_nombre.getText().trim().isEmpty() || tf_apellido.getText().trim().isEmpty() || tf_email.getText().trim().isEmpty() || new String(passf_2.getPassword()).isEmpty()) {
+        if (tf_username2.getText().trim().isEmpty() || tf_nombre.getText().trim().isEmpty() || tf_apellido.getText().trim().isEmpty() || tf_email.getText().trim().isEmpty() || new String(passf_2.getPassword()).trim().isEmpty()) {
             return false;
         } else {
             if (tf_username2.getText().length() > 20 || tf_nombre.getText().length() > 50 || tf_apellido.getText().length() > 80) {
