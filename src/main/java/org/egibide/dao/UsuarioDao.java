@@ -61,7 +61,7 @@ public class UsuarioDao implements org.egibide.idao.UsuarioDao {
         LocalDate fecha_nacimiento = LocalDate.parse(fecha);
         return new Usuario(rs.getString("nombre"),
                 rs.getString("apellidos"),
-                fecha_nacimiento,
+                //fecha_nacimiento,
                 rs.getString("email"),
                 rs.getString("ususario"),
                 rs.getString("pass").getBytes());

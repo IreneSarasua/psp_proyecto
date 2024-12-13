@@ -22,6 +22,13 @@
             <version>3.36.0.3</version>
         </dependency>
 
+        <!-- Para serializar objetos a byte[] -->
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>3.14.0</version>
+        </dependency>
+
     </dependencies>
 
 </project>
